@@ -26,6 +26,7 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFontTypefaceChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidHorizontalAlignmentChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLegoNxtSensorPortChoicePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidListViewTypeChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidScreenAnimationChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidScreenOrientationChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidSensorDistIntervalChoicePropertyEditor;
@@ -195,7 +196,9 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LEGO_NXT_GENERATED_COLOR)) {
       return new YoungAndroidColorChoicePropertyEditor(
           YoungAndroidColorChoicePropertyEditor.NXT_GENERATED_COLORS);
-    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT)) {
+    } else if(editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LISTVIEW_TYPE)){
+      return new YoungAndroidListViewTypeChoicePropertyEditor();
+    }else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT)) {
       return new NonNegativeFloatPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER)) {
       return new NonNegativeIntegerPropertyEditor();

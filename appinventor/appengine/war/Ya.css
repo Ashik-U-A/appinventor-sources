@@ -973,6 +973,27 @@ select.ode-PropertyEditor[disabled] {
   overflow: auto;
 }
 
+.listViewItemContainer {
+  border-bottom: 1px solid gray;
+  min-height: 40px;
+  display:table-cell;
+  vertical-align: middle;
+}
+
+.listViewItemImage {
+  border: 1px solid black;
+}
+
+.listViewItem {
+  vertical-align: middle;
+}
+
+.listViewItemSmall {
+  vertical-align: middle;
+  font-size: 10px;
+  color: rgb(50,50,50);
+}
+
 .listViewItemStyle {
   border-bottom: 1px solid gray;
   min-height: 40px;

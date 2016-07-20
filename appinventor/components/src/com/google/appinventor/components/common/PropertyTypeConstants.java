@@ -96,6 +96,12 @@ public class PropertyTypeConstants {
   public static final String PROPERTY_TYPE_LEGO_NXT_GENERATED_COLOR = "lego_nxt_generated_color";
 
   /**
+   *
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidListViewTypeChoicePropertyEditor
+   */
+  public static final String PROPERTY_TYPE_LISTVIEW_TYPE = "list_view_type";
+
+  /**
    * Non-negative (positive or zero) floating-point values.
    * @see com.google.appinventor.client.widgets.properties.NonNegativeFloatPropertyEditor
    */

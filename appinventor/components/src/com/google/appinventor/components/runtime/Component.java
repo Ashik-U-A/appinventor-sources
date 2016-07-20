@@ -95,6 +95,15 @@ public interface Component {
   static final int LAYOUT_ORIENTATION_VERTICAL = ComponentConstants.LAYOUT_ORIENTATION_VERTICAL;
 
   /*
+   *ListView Type constants
+   */
+  static final int LISTVIEW_TYPE_DEFAULT = 0;
+  static final int LISTVIEW_TYPE_ONE = 1;
+  static final int LISTVIEW_TYPE_TWO = 2;
+  static final int LISTVIEW_TYPE_THREE = 3;
+  static final int LISTVIEW_TYPE_FOUR = 4;
+
+  /*
    * Picture scaling constants.
    */
   static final int SCALING_SCALE_PROPORTIONALLY = 0;

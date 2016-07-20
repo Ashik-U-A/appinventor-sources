@@ -25,6 +25,7 @@ import com.google.appinventor.client.editor.simple.components.MockImagePicker;
 import com.google.appinventor.client.editor.simple.components.MockImageSprite;
 import com.google.appinventor.client.editor.simple.components.MockLabel;
 import com.google.appinventor.client.editor.simple.components.MockListView;
+import com.google.appinventor.client.editor.simple.components.MockListView2;
 import com.google.appinventor.client.editor.simple.components.MockListPicker;
 import com.google.appinventor.client.editor.simple.components.MockTimePicker;
 import com.google.appinventor.client.editor.simple.components.MockNonVisibleComponent;
@@ -280,6 +281,8 @@ public final class SimpleComponentDescriptor {
       return new MockLabel(editor);
     } else if (name.equals(MockListView.TYPE)) {
       return new MockListView(editor);
+    } else if (name.equals(MockListView2.TYPE)) {
+      return new MockListView2(editor);
     } else if (name.equals(MockSlider.TYPE)) {
         return new MockSlider(editor);
     } else if (name.equals(MockPasswordTextBox.TYPE)) {

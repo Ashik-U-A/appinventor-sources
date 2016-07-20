@@ -1135,6 +1135,28 @@ public interface OdeMessages extends Messages {
   @Description("Error shown after validation of percentage input fields.")
   String nonvalidPercentValue();
 
+  //Used in editor /youngandroid/properties/YoungAndroidListViewTypeChoicePropertyEditor.java
+
+  @DefaultMessage("Default")
+  @Description("Sets the default listview type")
+  String defaultListViewType();
+
+  @DefaultMessage("MainText only")
+  @Description("ListView type having only Main Text")
+  String listViewTypeOne();
+
+  @DefaultMessage("MainText and SubText")
+  @Description("Listview type having Main Text and Sub Text")
+  String listViewTypeTwo();
+
+  @DefaultMessage("Image and MainText")
+  @Description("Listview type having Image and Main Text")
+  String listViewTypeThree();
+
+  @DefaultMessage("Image, MainText and SubText")
+  @Description("Listview type having Image, Main Text and Sub Text")
+  String listViewTypeFour();
+
   // Used in editor/youngandroid/properties/YoungAndroidScreenAnimationChoicePropertyEditor.java
 
   @DefaultMessage("Default")
@@ -5771,4 +5793,8 @@ public interface OdeMessages extends Messages {
     "function into the indefinite future.")
   @Description("")
   String firebaseExperimentalWarning();
+
+  @DefaultMessage("ListViewType")
+  @Description("")
+  String ListViewTypeProperties();
 }
