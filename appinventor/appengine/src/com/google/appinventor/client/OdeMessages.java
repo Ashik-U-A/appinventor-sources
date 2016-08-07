@@ -1137,10 +1137,6 @@ public interface OdeMessages extends Messages {
 
   //Used in editor /youngandroid/properties/YoungAndroidListViewTypeChoicePropertyEditor.java
 
-  @DefaultMessage("Default")
-  @Description("Sets the default listview type")
-  String defaultListViewType();
-
   @DefaultMessage("MainText only")
   @Description("ListView type having only Main Text")
   String listViewTypeOne();

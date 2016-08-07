@@ -97,7 +97,6 @@ public interface Component {
   /*
    *ListView Type constants
    */
-  static final int LISTVIEW_TYPE_DEFAULT = 0;
   static final int LISTVIEW_TYPE_ONE = 1;
   static final int LISTVIEW_TYPE_TWO = 2;
   static final int LISTVIEW_TYPE_THREE = 3;
