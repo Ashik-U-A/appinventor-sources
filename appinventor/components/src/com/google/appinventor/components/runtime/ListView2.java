@@ -1,22 +1,19 @@
 package com.google.appinventor.components.runtime;
 
 
-import android.content.res.AssetManager;
+import android.os.Handler;
+import android.util.Log;
 import android.widget.*;
 import android.widget.LinearLayout;
-import com.google.appinventor.components.annotations.DesignerComponent;
-import com.google.appinventor.components.annotations.DesignerProperty;
-import com.google.appinventor.components.annotations.PropertyCategory;
-import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.*;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
-import android.graphics.drawable.GradientDrawable;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import com.google.appinventor.components.runtime.util.YailList;
 
 @DesignerComponent(version = YaVersion.NEW_LISTVIEW_COMPONENT_VERSION,
 description = "<p>This is a visible component that displays a list of text elements." +
@@ -33,8 +30,28 @@ public final class ListView2 extends AndroidViewComponent{
 	private final LinearLayout listViewLayout,layout;
 
 	private final int TEXT_COLOR_DEFAULT = 0xFF000000;
+	private final int BACKGROUND_COLOR_DEFAULT = 0xFFFFFFFF;
+	private final int SELECTION_COLOR_DEFAULT = 0xFF111111;
+	private final float TEXT_SIZE_MAIN_DEFAULT = 15;
+	private final float TEXT_SIZE_SUB_DEFAULT = 10;
+
+	private String[] mainElements;
+	private String[] subElements;
+
+	private int numberOfMainElements;
+	private int numberOfSubElements;
+	private int type;
+
+	private float mainTextSize;
+	private float subTextSize;
 	private int textColor;
-	
+	private int textColorSub;
+	private int backgroundColor;
+	private int selectionColor;
+
+	private String selectedListItemTag;
+	private int selection;
+
 	public ListView2(ComponentContainer container) {
 		super(container.$form());
 		this.container = container;
@@ -46,7 +63,14 @@ public final class ListView2 extends AndroidViewComponent{
 		layout.addView(listViewContainer);
 		container.$add(this);
 		textColor = TEXT_COLOR_DEFAULT;
-		fillDataWhenEmpty(LISTVIEW_TYPE_ONE);
+		textColorSub = TEXT_COLOR_DEFAULT;
+		mainTextSize = TEXT_SIZE_MAIN_DEFAULT;
+		subTextSize = TEXT_SIZE_SUB_DEFAULT;
+		backgroundColor = BACKGROUND_COLOR_DEFAULT;
+		numberOfMainElements = 0;
+		numberOfSubElements = 0;
+		type = LISTVIEW_TYPE_ONE;
+		fillDataWhenEmpty(type);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -75,14 +99,31 @@ public final class ListView2 extends AndroidViewComponent{
 		}
 		super.Width(width);
 	}
-	
+
+
 	@DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LISTVIEW_TYPE,
 			defaultValue = Component.LISTVIEW_TYPE_ONE+"")
 	@SimpleProperty(description = "Specifies the Type of Listview. It can be a Simple List or a Complex Collection of Images and Text",
 			userVisible = false)
 	public void ListViewType(int type){
-
-		fillDataWhenEmpty(type);
+		this.type = type;
+		Log.d("LISTVIEWTYPE()","Type = "+type);
+		if(type == LISTVIEW_TYPE_ONE){
+			if(numberOfMainElements == 0){
+				fillDataWhenEmpty(type);
+			}
+			else{
+				fillData(type);
+			}
+		}
+		else if(type == LISTVIEW_TYPE_TWO){
+			if(numberOfSubElements == 0 || numberOfMainElements == 0){
+				fillDataWhenEmpty(type);
+			}
+			else{
+				fillData(type);
+			}
+		}
 	}
 	
 	
@@ -116,50 +157,77 @@ public final class ListView2 extends AndroidViewComponent{
 			}
 		}
 	}
+
+	private void fillData(int type){
+		listViewLayout.removeAllViews();
+		if(type == LISTVIEW_TYPE_ONE){
+			for(int i=0;i<numberOfMainElements;i++){
+				populateListView(type, mainElements[i], null, i);
+			}
+		}
+		else if(type == LISTVIEW_TYPE_TWO){
+			for(int i=0;i<(numberOfMainElements<=numberOfSubElements?numberOfMainElements:numberOfSubElements);i++){
+				populateListView(type, mainElements[i], subElements[i], i);
+			}
+		}
+	}
 	
 	private void populateListView(int type,String main, String sub,int position){
 		if(type == LISTVIEW_TYPE_ONE){
-			TextView tv = new TextView(container.$context());
-			tv.setText(main);
-			tv.setWidth(310);
-			tv.setHeight(50);
-			tv.setGravity(Gravity.CENTER_VERTICAL);
-			tv.setTextColor(textColor);
+			TextView mainText = new TextView(container.$context());
+			mainText.setText(main);
+			mainText.setWidth(310);
+			mainText.setHeight(50);
+			mainText.setGravity(Gravity.CENTER_VERTICAL);
+			mainText.setTextColor(textColor);
+			mainText.setTextSize(mainTextSize);
 			View line = new View(container.$context());
 			line.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,1));
 			line.setBackgroundColor(COLOR_GRAY);
-			RelativeLayout listItemContainer = new RelativeLayout(container.$context());
+			final LinearLayout listItemContainer = new LinearLayout(container.$context());
 			listItemContainer.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,51));
-			listItemContainer.addView(tv);
-			listItemContainer.addView(line);
-			listItemContainer.setTag("LV T1 ITEM "+(position+1));
+			listItemContainer.addView(mainText);
+			listItemContainer.setBackgroundColor(backgroundColor);
+			listItemContainer.setTag("LV 1 ITEM _"+(position+1));
+			listItemContainer.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					selectedListItemTag = listItemContainer.getTag().toString();
+					selection = Integer.parseInt(selectedListItemTag.split("_")[1])-1;
+					listItemContainer.setBackgroundColor(selectionColor);
+					revertBack(listItemContainer);
+				}
+			});
 			listViewLayout.addView(listItemContainer);
+			listViewLayout.addView(line);
 		}
 		else if(type == LISTVIEW_TYPE_TWO){
-			TextView tv = new TextView(container.$context());
-			TextView tv2 = new TextView(container.$context());
-			tv.setText(main);
-			tv.setWidth(310);
-			tv.setHeight(25);
-			tv.setGravity(Gravity.CENTER_VERTICAL);
-			tv.setTextColor(textColor);
-			tv2.setText(sub);
-			tv2.setWidth(310);
-			tv2.setHeight(25);
-			tv2.setGravity(Gravity.CENTER_VERTICAL);
-			tv2.setTextColor(textColor);
-			tv2.setTextSize(10);
+			TextView mainText = new TextView(container.$context());
+			TextView subText = new TextView(container.$context());
+			mainText.setText(main);
+			mainText.setWidth(310);
+			mainText.setHeight(25);
+			mainText.setGravity(Gravity.CENTER_VERTICAL);
+			mainText.setTextColor(textColor);
+			mainText.setTextSize(mainTextSize);
+			subText.setText(sub);
+			subText.setWidth(310);
+			subText.setHeight(25);
+			subText.setGravity(Gravity.CENTER_VERTICAL);
+			subText.setTextColor(textColorSub);
+			subText.setTextSize(subTextSize);
 			View line = new View(container.$context());
 			line.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,1));
 			line.setBackgroundColor(COLOR_GRAY);
 			LinearLayout listItemContainer = new LinearLayout(container.$context());
 			listItemContainer.setOrientation(LAYOUT_ORIENTATION_VERTICAL);
 			listItemContainer.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,51));
-			listItemContainer.addView(tv);
-			listItemContainer.addView(tv2);
-			listItemContainer.addView(line);
-			listItemContainer.setTag("LV T2 ITEM "+(position+1));
+			listItemContainer.addView(mainText);
+			listItemContainer.addView(subText);
+			listItemContainer.setBackgroundColor(backgroundColor);
+			listItemContainer.setTag("LV T2 ITEM _"+(position+1));
 			listViewLayout.addView(listItemContainer);
+			listViewLayout.addView(line);
 		}
 		else if(type == LISTVIEW_TYPE_THREE){
 			LinearLayout listItemContainer = new LinearLayout(container.$context());
@@ -173,12 +241,15 @@ public final class ListView2 extends AndroidViewComponent{
 			mainText.setHeight(50);
 			mainText.setGravity(Gravity.CENTER_VERTICAL);
 			mainText.setTextColor(textColor);
+			mainText.setTextSize(mainTextSize);
 			mainText.setText(main);
 			View line = new View(container.$context());
 			line.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,1));
 			line.setBackgroundColor(COLOR_GRAY);
 			listItemContainer.addView(image);
 			listItemContainer.addView(mainText);
+			listItemContainer.setBackgroundColor(backgroundColor);
+			listItemContainer.setTag("LV T3 ITEM _"+(position+1));
 			listViewLayout.addView(listItemContainer);
 			listViewLayout.addView(line);
 		}
@@ -197,14 +268,15 @@ public final class ListView2 extends AndroidViewComponent{
 			mainText.setHeight(25);
 			mainText.setGravity(Gravity.CENTER_VERTICAL);
 			mainText.setTextColor(textColor);
+			mainText.setTextSize(mainTextSize);
 			mainText.setText(main);
 			TextView subText = new TextView(container.$context());
 			subText.setWidth(260);
 			subText.setHeight(25);
 			subText.setGravity(Gravity.CENTER_VERTICAL);
-			subText.setTextColor(textColor);
+			subText.setTextColor(textColorSub);
 			subText.setText(sub);
-            subText.setTextSize(10);
+            subText.setTextSize(subTextSize);
 			View line = new View(container.$context());
 			line.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,1));
 			line.setBackgroundColor(COLOR_GRAY);
@@ -212,8 +284,129 @@ public final class ListView2 extends AndroidViewComponent{
 			listItemSubContainer.addView(subText);
 			listItemContainer.addView(image);
 			listItemContainer.addView(listItemSubContainer);
-			listItemContainer.addView(line);
+			listItemContainer.setBackgroundColor(backgroundColor);
+			listItemContainer.setTag("LV T4 ITEM _"+(position+1));
 			listViewLayout.addView(listItemContainer);
+			listViewLayout.addView(line);
 		}
+	}
+
+	private void revertBack(final View view){
+		/*final Handler handler = new Handler();
+		handler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				view.setBackgroundColor(backgroundColor);
+			}
+		},500);*/
+		OnSelection();
+	}
+
+	@DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+		defaultValue = "")
+	@SimpleProperty
+	public void Elements_MainString(String string){
+		String[] strings = string.split(",");
+		mainElements = strings;
+		numberOfMainElements = strings.length;
+		if(numberOfMainElements == 1 && mainElements[0] == ""){
+			numberOfMainElements = 0;
+		}
+		Log.d("ELEMENTS_MAINSTRING()","numberOfMainElements = "+numberOfMainElements);
+		ListViewType(type);
+	}
+
+	/*@SimpleProperty(category = PropertyCategory.BEHAVIOR)
+	public YailList Elements_MainString(){
+		return YailList.makeList(mainElements);
+	}*/
+
+	@DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+		defaultValue = "")
+	@SimpleProperty
+	public void Elements_SubString(String string){
+		String[] strings = string.split(",");
+		subElements = strings;
+		numberOfSubElements = strings.length;
+		if(numberOfSubElements == 1 && subElements[0] == ""){
+			numberOfSubElements = 0;
+		}
+		Log.d("ELEMENTS_SUBSTRING()","numberOfSubElements = "+numberOfSubElements);
+		ListViewType(type);
+	}
+
+	/*@SimpleProperty(category = PropertyCategory.BEHAVIOR)
+	public YailList Elements_SubString(){
+		return YailList.makeList(subElements);
+	}*/
+
+	@SimpleProperty(category = PropertyCategory.BEHAVIOR)
+	public int Color_MainText(){
+		return textColor;
+	}
+
+	@DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+		defaultValue = Component.COLOR_BLACK + "")
+	@SimpleProperty
+	public void Color_MainText(int color){
+		textColor = color;
+		ListViewType(type);
+	}
+
+	@SimpleProperty(category = PropertyCategory.BEHAVIOR)
+	public int Color_SubText(){ return textColorSub; }
+
+	@DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+		defaultValue = Component.COLOR_BLACK + "")
+	@SimpleProperty
+	public void Color_SubText(int color){
+		textColorSub = color;
+		ListViewType(type);
+	}
+
+	@SimpleProperty(category = PropertyCategory.BEHAVIOR)
+	public int Color_Background(){
+
+		return backgroundColor;
+	}
+
+	@DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+		defaultValue = Component.COLOR_WHITE + "")
+	@SimpleProperty
+	public void Color_Background(int color){
+		backgroundColor = color;
+		ListViewType(type);
+	}
+
+	@SimpleProperty(category = PropertyCategory.BEHAVIOR)
+	public String FontSize_MainText(){
+
+		return (mainTextSize + "");
+	}
+
+	@DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+		defaultValue = "15")
+	@SimpleProperty
+	public void FontSize_MainText(String size){
+		mainTextSize = (float) Integer.parseInt(size == "" ? mainTextSize + "" : size);
+		ListViewType(type);
+	}
+
+	@SimpleProperty(category = PropertyCategory.BEHAVIOR)
+	public String FontSize_SubText(){
+		return (subTextSize + "");
+	}
+
+	@DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+		defaultValue = "10")
+	@SimpleProperty
+	public void FontSize_SubText(String size){
+		subTextSize = (float) Integer.parseInt(size == "" ? subTextSize + "" : size);
+		ListViewType(type);
+	}
+
+	@SimpleEvent
+	public void OnSelection(){
+		EventDispatcher.dispatchEvent(this,"OnSelection");
 	}
 }

@@ -5793,4 +5793,36 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("ListViewType")
   @Description("")
   String ListViewTypeProperties();
+
+  @DefaultMessage("Elements_MainString")
+  @Description("")
+  String Elements_MainStringProperties();
+
+  @DefaultMessage("Elements_SubString")
+  @Description("")
+  String Elements_SubStringProperties();
+
+  @DefaultMessage("Color_MainText")
+  @Description("")
+  String Color_MainTextProperties();
+
+  @DefaultMessage("Color_SubText")
+  @Description("")
+  String Color_SubTextProperties();
+
+  @DefaultMessage("Color_Background")
+  @Description("")
+  String Color_BackgroundProperties();
+
+  @DefaultMessage("FontSize_MainText")
+  @Description("")
+  String FontSize_MainTextProperties();
+
+  @DefaultMessage("FontSize_SubText")
+  @Description("")
+  String FontSize_SubTextProperties();
+
+  @DefaultMessage("OnSelection")
+  @Description("")
+  String OnSelectionEvents();
 }
