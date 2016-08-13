@@ -39,6 +39,7 @@ public abstract class MockVisibleComponent extends MockComponent {
   protected static final String PROPERTY_NAME_LISTVIEW_BACKGROUND_COLOR = "Color_Background";
   protected static final String PROPERTY_NAME_LISTVIEW_TEXT_SIZE_MAIN = "FontSize_MainText";
   protected static final String PROPERTY_NAME_LISTVIEW_TEXT_SIZE_SUB = "FontSize_SubText";
+  protected static final String PROPERTY_NAME_LISTVIEW_PICTURE_SELECTOR = "Picture_Select";
   protected static final String PROPERTY_NAME_TEXT = "Text";
   protected static final String PROPERTY_NAME_LISTVIEW = "ElementsFromString";
   protected static final String PROPERTY_NAME_SHOW_FILTER_BAR = "ShowFilterBar";

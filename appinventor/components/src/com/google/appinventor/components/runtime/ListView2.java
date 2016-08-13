@@ -1,6 +1,7 @@
 package com.google.appinventor.components.runtime;
 
 
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.*;
@@ -13,7 +14,11 @@ import com.google.appinventor.components.common.YaVersion;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import com.google.appinventor.components.runtime.util.MediaUtil;
+import com.google.appinventor.components.runtime.util.ViewUtil;
 import com.google.appinventor.components.runtime.util.YailList;
+
+import java.io.IOException;
 
 @DesignerComponent(version = YaVersion.NEW_LISTVIEW_COMPONENT_VERSION,
 description = "<p>This is a visible component that displays a list of text elements." +
@@ -23,6 +28,7 @@ category = ComponentCategory.USERINTERFACE,
 nonVisible = false,
 iconName = "images/ball.png")
 @SimpleObject
+@UsesPermissions(permissionNames = "android.permission.INTERNET")
 public final class ListView2 extends AndroidViewComponent{
 
 	private final ComponentContainer container;
@@ -37,9 +43,11 @@ public final class ListView2 extends AndroidViewComponent{
 
 	private String[] mainElements;
 	private String[] subElements;
+	private String[] pictureElements;
 
 	private int numberOfMainElements;
 	private int numberOfSubElements;
+	private int numberOfPictureElements;
 	private int type;
 
 	private float mainTextSize;
@@ -69,6 +77,7 @@ public final class ListView2 extends AndroidViewComponent{
 		backgroundColor = BACKGROUND_COLOR_DEFAULT;
 		numberOfMainElements = 0;
 		numberOfSubElements = 0;
+		numberOfPictureElements = 0;
 		type = LISTVIEW_TYPE_ONE;
 		fillDataWhenEmpty(type);
 		// TODO Auto-generated constructor stub
@@ -124,6 +133,20 @@ public final class ListView2 extends AndroidViewComponent{
 				fillData(type);
 			}
 		}
+		else if(type == LISTVIEW_TYPE_THREE){
+			if(numberOfMainElements == 0 || numberOfPictureElements == 0){
+				fillDataWhenEmpty(type);
+			}
+			else{
+				fillData(type);
+			}
+		}
+		else if(type == LISTVIEW_TYPE_FOUR){
+			if(numberOfMainElements == 0 || numberOfSubElements == 0 || numberOfPictureElements == 0){
+				fillDataWhenEmpty(type);
+			}
+			else fillData(type);
+		}
 	}
 	
 	
@@ -133,27 +156,27 @@ public final class ListView2 extends AndroidViewComponent{
 		if(type == LISTVIEW_TYPE_ONE){
 			for(int i=0;i<12;i++){
 				s = "This is Main Text" + (i+1);
-				populateListView(type, s, null, i);
+				populateListView(type, s, null, null, i);
 			}
 		}
 		else if(type == LISTVIEW_TYPE_TWO){
 			for(int i=0;i<12;i++){
 				s = "This is Main Text " + (i+1);
 				s1 = "This is Sub Text " + (i+1);
-				populateListView(type, s, s1, i);
+				populateListView(type, s, s1, null, i);
 			}
 		}
 		else if(type == LISTVIEW_TYPE_THREE){
 			for(int i=0;i<12;i++) {
 				s = "This is Main Text " + (i + 1);
-				populateListView(type, s, null, i);
+				populateListView(type, s, null, null, i);
 			}
 		}
 		else if(type == LISTVIEW_TYPE_FOUR){
 			for(int i=0;i<12;i++) {
 				s = "This is Main Text " + (i + 1);
 				s1 = "This is Sub Text " + (i + 1);
-				populateListView(type, s, s1, i);
+				populateListView(type, s, s1, null, i);
 			}
 		}
 	}
@@ -162,17 +185,28 @@ public final class ListView2 extends AndroidViewComponent{
 		listViewLayout.removeAllViews();
 		if(type == LISTVIEW_TYPE_ONE){
 			for(int i=0;i<numberOfMainElements;i++){
-				populateListView(type, mainElements[i], null, i);
+				populateListView(type, mainElements[i], null, null, i);
 			}
 		}
 		else if(type == LISTVIEW_TYPE_TWO){
 			for(int i=0;i<(numberOfMainElements<=numberOfSubElements?numberOfMainElements:numberOfSubElements);i++){
-				populateListView(type, mainElements[i], subElements[i], i);
+				populateListView(type, mainElements[i], subElements[i], null, i);
+			}
+		}
+		else if(type == LISTVIEW_TYPE_THREE){
+			for(int i=0;i<(numberOfMainElements<=numberOfPictureElements?numberOfMainElements:numberOfPictureElements);i++){
+				populateListView(type, mainElements[i], null, pictureElements[i], i);
+			}
+		}
+		else if(type == LISTVIEW_TYPE_FOUR){
+			int temp = numberOfMainElements<=numberOfSubElements?numberOfMainElements:numberOfSubElements;
+			for(int i=0;i<(numberOfPictureElements<=temp?numberOfPictureElements:temp);i++){
+				populateListView(type, mainElements[i], subElements[i], pictureElements[i], i);
 			}
 		}
 	}
 	
-	private void populateListView(int type,String main, String sub,int position){
+	private void populateListView(int type,String main, String sub, String url, int position){
 		if(type == LISTVIEW_TYPE_ONE){
 			TextView mainText = new TextView(container.$context());
 			mainText.setText(main);
@@ -192,10 +226,10 @@ public final class ListView2 extends AndroidViewComponent{
 			listItemContainer.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View view) {
-					selectedListItemTag = listItemContainer.getTag().toString();
-					selection = Integer.parseInt(selectedListItemTag.split("_")[1])-1;
-					listItemContainer.setBackgroundColor(selectionColor);
-					revertBack(listItemContainer);
+					selectedListItemTag = view.getTag().toString();
+					selection = Integer.parseInt(view.getTag().toString().split("_")[1]);
+					view.setBackgroundColor(selectionColor);
+					revertBack(view);
 				}
 			});
 			listViewLayout.addView(listItemContainer);
@@ -225,7 +259,7 @@ public final class ListView2 extends AndroidViewComponent{
 			listItemContainer.addView(mainText);
 			listItemContainer.addView(subText);
 			listItemContainer.setBackgroundColor(backgroundColor);
-			listItemContainer.setTag("LV T2 ITEM _"+(position+1));
+			listItemContainer.setTag("LV 2 ITEM _"+(position+1));
 			listViewLayout.addView(listItemContainer);
 			listViewLayout.addView(line);
 		}
@@ -233,9 +267,22 @@ public final class ListView2 extends AndroidViewComponent{
 			LinearLayout listItemContainer = new LinearLayout(container.$context());
 			listItemContainer.setOrientation(LAYOUT_ORIENTATION_HORIZONTAL);
 			listItemContainer.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,50));
+			Drawable drawable;
+			try{
+				drawable = MediaUtil.getBitmapDrawable(container.$form(),url);
+			}
+			catch(IOException e){
+				Log.e("IMAGE NOT LOADED","Cant find the file");
+				drawable = null;
+			}
 			ImageView image = new ImageView(container.$context());
 			image.setLayoutParams(new LayoutParams(50,50));
-			image.setBackgroundColor(0x22000000);
+			if(drawable == null){
+				image.setBackgroundColor(0x22000000);
+			}
+			else{
+				ViewUtil.setImage(image,drawable);
+			}
 			TextView mainText = new TextView(container.$context());
 			mainText.setWidth(260);
 			mainText.setHeight(50);
@@ -249,7 +296,7 @@ public final class ListView2 extends AndroidViewComponent{
 			listItemContainer.addView(image);
 			listItemContainer.addView(mainText);
 			listItemContainer.setBackgroundColor(backgroundColor);
-			listItemContainer.setTag("LV T3 ITEM _"+(position+1));
+			listItemContainer.setTag("LV 3 ITEM _"+(position+1));
 			listViewLayout.addView(listItemContainer);
 			listViewLayout.addView(line);
 		}
@@ -260,9 +307,22 @@ public final class ListView2 extends AndroidViewComponent{
 			LinearLayout listItemSubContainer = new LinearLayout(container.$context());
 			listItemSubContainer.setOrientation(LAYOUT_ORIENTATION_VERTICAL);
 			listItemSubContainer.setLayoutParams(new LayoutParams(260,50));
+			Drawable drawable;
+			try{
+				drawable = MediaUtil.getBitmapDrawable(container.$form(),url);
+			}
+			catch(IOException e){
+				Log.e("IMAGE NOT LOADED","Cant find the file");
+				drawable = null;
+			}
 			ImageView image = new ImageView(container.$context());
 			image.setLayoutParams(new LayoutParams(50,50));
-			image.setBackgroundColor(0x22000000);
+			if(drawable == null){
+				image.setBackgroundColor(0x22000000);
+			}
+			else{
+				ViewUtil.setImage(image,drawable);
+			}
 			TextView mainText = new TextView(container.$context());
 			mainText.setWidth(260);
 			mainText.setHeight(25);
@@ -285,20 +345,20 @@ public final class ListView2 extends AndroidViewComponent{
 			listItemContainer.addView(image);
 			listItemContainer.addView(listItemSubContainer);
 			listItemContainer.setBackgroundColor(backgroundColor);
-			listItemContainer.setTag("LV T4 ITEM _"+(position+1));
+			listItemContainer.setTag("LV 4 ITEM _"+(position+1));
 			listViewLayout.addView(listItemContainer);
 			listViewLayout.addView(line);
 		}
 	}
 
 	private void revertBack(final View view){
-		/*final Handler handler = new Handler();
+		final Handler handler = new Handler();
 		handler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
 				view.setBackgroundColor(backgroundColor);
 			}
-		},500);*/
+		},1500);
 		OnSelection();
 	}
 
@@ -408,5 +468,29 @@ public final class ListView2 extends AndroidViewComponent{
 	@SimpleEvent
 	public void OnSelection(){
 		EventDispatcher.dispatchEvent(this,"OnSelection");
+	}
+
+	@DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LISTVIEW_PICTURE_SELECTOR,
+		defaultValue = "")
+	@SimpleProperty(userVisible = false)
+	public void Picture_Select(String value){
+		numberOfPictureElements = 0;
+		String[] splitter = value.split("%picNum:");
+		String[] temporary = new String[splitter.length];
+		for(int i=0;i<splitter.length;i++){
+			String[] temp = splitter[i].split("%picName:");
+			String index = temp[0];
+			String fileName = temp[1];
+			if(fileName != null){
+				temporary[numberOfPictureElements] = fileName;
+				numberOfPictureElements++;
+			}
+		}
+		for(int i=0;i<numberOfPictureElements;i++){
+			Log.v("IMAGE : ",i + ". " + temporary[i]);
+		}
+		Log.v("NUMBER OF PICTURE ELEMENTS: ",numberOfPictureElements + "");
+		pictureElements = temporary;
+		ListViewType(type);
 	}
 }

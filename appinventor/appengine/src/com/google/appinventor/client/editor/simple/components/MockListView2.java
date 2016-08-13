@@ -2,6 +2,7 @@ package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -9,6 +10,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+
 
 
 public class MockListView2 extends MockVisibleComponent{
@@ -28,8 +30,10 @@ public class MockListView2 extends MockVisibleComponent{
 	private int WIDTH;
 	private String[] mainElements;
 	private String[] subElements;
+	private String[] pictureElements;
 	private int numberOfMainElements;
 	private int numberOfSubElements;
+	private int numberOfPictureElements;
 
 	private String MAIN_TEXT_SIZE_DEFAULT = "15";
 	private String SUB_TEXT_SIZE_DEFAULT = "10";
@@ -52,6 +56,7 @@ public class MockListView2 extends MockVisibleComponent{
 		MockComponentsUtil.setWidgetBackgroundColor(listViewWidget, "&HFFFFFFFF");
 		numberOfMainElements = 0;
 		numberOfSubElements = 0;
+		numberOfPictureElements = 0;
 		type = 1;
 		mainTextColor = "&HFF000000";
 		subTextColor = "&HFF000000";
@@ -212,6 +217,17 @@ public class MockListView2 extends MockVisibleComponent{
 				listViewTypeTwo(mainElements[i],subElements[i]);
 			}
 		}
+		else if(type == 3){
+			for(int i=0;i<(numberOfMainElements<=numberOfPictureElements?numberOfMainElements:numberOfPictureElements);i++){
+				listViewTypeThree(mainElements[i],pictureElements[i]);
+			}
+		}
+		else if(type == 4){
+			int temporary = numberOfMainElements <= numberOfSubElements ? numberOfMainElements : numberOfSubElements;
+			for(int i=0;i<(numberOfPictureElements <= temporary ? numberOfPictureElements : temporary);i++){
+				listViewTypeFour(mainElements[i],subElements[i],pictureElements[i]);
+			}
+		}
 	}
 
 	private void setMainElements(String string){
@@ -254,10 +270,22 @@ public class MockListView2 extends MockVisibleComponent{
 			}
 		}
 		else if(value == "3"){
-			fillDataWhenEmpty(3);
+			type = 3;
+			if(numberOfMainElements == 0 || numberOfPictureElements == 0){
+				fillDataWhenEmpty(type);
+			}
+			else {
+				fillData(type);
+			}
 		}
 		else if(value == "4"){
-			fillDataWhenEmpty(4);
+			type = 4;
+			if(numberOfMainElements == 0 || numberOfSubElements == 0 || numberOfPictureElements == 0){
+				fillDataWhenEmpty(type);
+			}
+			else {
+				fillData(type);
+			}
 		}
 	}
 
@@ -286,6 +314,25 @@ public class MockListView2 extends MockVisibleComponent{
 		changeListViewTypeProperty(type + "");
 	}
 
+	private void setPicture(String value){
+		numberOfPictureElements = 0;
+		String[] fileNames = value.split("%picNum:");
+		for(String x:fileNames){
+			OdeLog.log("X :: "+x);
+		}
+		String[] temporary = new String[fileNames.length];
+		for(int i=0;i<fileNames.length;i++){
+			String[] temp = fileNames[i].split("%picName:");
+			String index = temp[0];
+			String fileName = temp[1];
+			if(fileName != null){
+				temporary[i] = convertImagePropertyValueToUrl(fileName);
+				numberOfPictureElements++;
+			}
+		}
+		pictureElements = temporary;
+		changeListViewTypeProperty(type + "");
+	}
 	
 	@Override
 	public void onPropertyChange(String propertyName,String newValue){
@@ -321,6 +368,9 @@ public class MockListView2 extends MockVisibleComponent{
 		else if(propertyName == PROPERTY_NAME_LISTVIEW_TEXT_SIZE_SUB){
 			setSubTextFontSize(newValue);
 			refreshForm();
+		}
+		else if(propertyName == PROPERTY_NAME_LISTVIEW_PICTURE_SELECTOR){
+			setPicture(newValue);
 		}
 	}
 }

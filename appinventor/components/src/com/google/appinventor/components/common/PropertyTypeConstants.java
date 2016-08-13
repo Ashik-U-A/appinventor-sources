@@ -101,6 +101,13 @@ public class PropertyTypeConstants {
    */
   public static final String PROPERTY_TYPE_LISTVIEW_TYPE = "list_view_type";
 
+    /**
+     *
+     * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidListViewPictureSelectorPropertyEditor
+      */
+  public static final String PROPERTY_TYPE_LISTVIEW_PICTURE_SELECTOR = "listview_type_picture_selector";
+
+
   /**
    * Non-negative (positive or zero) floating-point values.
    * @see com.google.appinventor.client.widgets.properties.NonNegativeFloatPropertyEditor

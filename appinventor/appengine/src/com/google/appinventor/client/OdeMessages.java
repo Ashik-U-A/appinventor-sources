@@ -5825,4 +5825,8 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("OnSelection")
   @Description("")
   String OnSelectionEvents();
+
+  @DefaultMessage("Select The Pictures for your ListView")
+  @Description("")
+  String Picture_SelectProperties();
 }
